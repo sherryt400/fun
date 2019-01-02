@@ -1,6 +1,7 @@
 'use strict';
 
 const expect = require('expect.js');
+const tempDir = require('temp-dir');
 
 let docker = require('../lib/docker');
 
@@ -475,5 +476,45 @@ describe('test docker run', async () => {
 
     assert.calledWith(DockerCli.prototype.getContainer, sinon.match.string);
     assert.calledOnce(DockerCli.prototype.getContainer().stop);
+  });
+
+});
+
+describe('InstallationContainer', async ()=> {
+
+  beforeEach(() => {
+    sandbox.stub(DockerCli.prototype, 'listImages').resolves({
+      length: 1
+    });
+
+    docker = proxyquire('../lib/docker', {
+      'dockerode': DockerCli
+    });
+  });
+
+  afterEach(()=>{
+    sandbox.restore();
+  });
+
+  it('startInstallationContainer', async ()=> {
+    const runner = await docker.startInstallationContainer({
+      runtime: 'python2.7', 
+      imageName: 'bitnami/minideb:jessie', 
+      codeUri: tempDir
+    });
+
+    await runner.stop();
+  });
+
+  it('exec installation container', async ()=> {
+    const runner = await docker.startInstallationContainer({
+      runtime: 'python2.7', 
+      imageName: 'bitnami/minideb:jessie', 
+      codeUri: tempDir
+    });
+
+    await runner.exec(['/bin/bash', '-c', 'echo test $VAR'], ['VAR=sdfasdfasdf']);
+
+    await runner.stop();
   });
 });
