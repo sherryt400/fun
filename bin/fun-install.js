@@ -7,7 +7,6 @@ const _ = require('lodash');
 const Command = require('commander').Command;
 const program = new Command('fun install');
 const {install, installAll, init} = require('../lib/commands/install');
-const fs = require('fs');
 
 const optDefaults = {
   packageType: 'module'
@@ -42,7 +41,7 @@ program
   .description('initialize fun.yml file.')
   .action(init);
   
-  program.parse(process.argv);
+program.parse(process.argv);
   
 if (!program.args.length) { 
 

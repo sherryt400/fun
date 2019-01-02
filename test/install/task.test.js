@@ -4,7 +4,7 @@ const {PipTask, AptTask, ShellTask} = require('../../lib/install/task');
 const Context = require('../../lib/install/context');
 // const { startInstallationContainer } = require('../../lib/docker');
 const tempDir = require('temp-dir');
-const fs = require('fs'), path = require('path');
+const path = require('path');
 const mkdirp = require('mkdirp-promise');
 const util = require('util');
 const rimraf = util.promisify(require('rimraf'));
@@ -19,6 +19,7 @@ describe('task', async ()=> {
   beforeEach(async () => {
     funTempDir = path.join(tempDir, 'funtemp');
     await mkdirp(funTempDir);
+    await rimraf(funTempDir + '/{*,.*}');
   });
 
   afterEach(async () => {
@@ -81,7 +82,7 @@ describe('task', async ()=> {
 
     const context = await new Context('python3', funTempDir);
 
-    const shellTask = new ShellTask(undefined, 'python3', funTempDir, "echo 'aa' > 1.txt", context);
+    const shellTask = new ShellTask(undefined, 'python3', funTempDir, 'echo \'aa\' > 1.txt', context);
 
     await shellTask.run();
 
@@ -89,5 +90,5 @@ describe('task', async ()=> {
 
     await context.teardown();
 
-  })
+  });
 });
